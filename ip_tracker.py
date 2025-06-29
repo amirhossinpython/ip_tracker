@@ -329,7 +329,7 @@ if __name__ == "__main__":
         
         
         print("\n🔎 دریافت اطلاعات یک IP نمونه...")
-        sample_ip = "5.125.116.172"  
+        sample_ip = input("enter the ip >>=")   
         sample_info = tracker.get_ip_info(sample_ip, lang='en')
         tracker.generate_report(sample_info)
         
