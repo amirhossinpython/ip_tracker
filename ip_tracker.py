@@ -7,7 +7,7 @@ import json
 import os
 import webbrowser
 from datetime import datetime
-import matplotlib.pyplot as plt
+
 class IPTrackerPro:
     def __init__(self):
         self._install_requirements()
@@ -255,7 +255,7 @@ class IPTrackerPro:
             return
         
         try:
-            
+            import matplotlib.pyplot as plt
             
             # تحلیل کشورها
             countries = {}
@@ -316,33 +316,69 @@ class IPTrackerPro:
         except Exception as e:
             print(f"❌ خطا در صدور تاریخچه: {str(e)}")
 
-
+# مثال استفاده
 if __name__ == "__main__":
-    print("🛠️ در حال راه‌اندازی پروژه ردیابی IP...")
+    print("🌍 IP Tracker Pro - ابزار حرفه‌ای ردیابی IP")
     tracker = IPTrackerPro()
     
     try:
+        ip = input("\nلطفاً آدرس IP را وارد کنید: ").strip()
+        
+        if not ip:
+            print("⚠️ لطفاً یک آدرس IP معتبر وارد کنید")
+            exit()
+            
+        print(f"\n🔎 در حال بررسی IP: {ip}")
+        ip_info = tracker.get_ip_info(ip, lang='fa')
+        
+        # نمایش گزارش کامل
+        print("\n📊 گزارش کامل اطلاعات IP")
+        print("=" * 50)
+        
+        # اطلاعات مکانی
+        print("\n📍 اطلاعات مکانی")
+        print("-------------------")
+        print(f"🌍 کشور: {ip_info.get('country', 'N/A')} ({ip_info.get('countryCode', 'N/A')})")
+        print(f"🏙 منطقه: {ip_info.get('regionName', 'N/A')} ({ip_info.get('region', 'N/A')})")
+        print(f"🏡 شهر: {ip_info.get('city', 'N/A')}")
+        print(f"📮 کد پستی: {ip_info.get('zip', 'N/A')}")
+        print(f"📍 مختصات: {ip_info.get('lat', 'N/A')}, {ip_info.get('lon', 'N/A')}")
+        print(f"⏰ منطقه زمانی: {ip_info.get('timezone', 'N/A')}")
+        
+        # اطلاعات شبکه
+        print("\n🖥️ اطلاعات شبکه")
+        print("-------------------")
+        print(f"🔌 ISP: {ip_info.get('isp', 'N/A')}")
+        print(f"🏢 سازمان: {ip_info.get('org', 'N/A')}")
+        print(f"🖥 سیستم مستقل: {ip_info.get('as', 'N/A')}")
+        print(f"🆔 آدرس IP: {ip_info.get('query', 'N/A')}")
+        
+        # لینک‌های نقشه
+        if 'lat' in ip_info and 'lon' in ip_info:
+            print("\n🗺️ لینک‌های نقشه:")
+            print("-------------------")
+            print(f"🌐 گوگل مپ: https://www.google.com/maps?q={ip_info['lat']},{ip_info['lon']}")
+            print(f"🗺️ OpenStreetMap: https://www.openstreetmap.org/?mlat={ip_info['lat']}&mlon={ip_info['lon']}")
+            print(f"🔍 بینگ مپ: https://www.bing.com/maps?cp={ip_info['lat']}~{ip_info['lon']}")
+        
+        print("=" * 50)
+        
        
-        print("\n🔎 دریافت اطلاعات IP عمومی شما...")
-        my_ip_info = tracker.get_ip_info()
-        tracker.generate_report(my_ip_info)
-        
-        
-        print("\n🔎 دریافت اطلاعات یک IP نمونه...")
-        sample_ip "ip adrr" 
-        sample_info = tracker.get_ip_info(sample_ip, lang='en')
-        tracker.generate_report(sample_info)
-        
-        # تحلیل تاریخچه
-        print("\n📈 تحلیل تاریخچه جستجوها...")
-        tracker.history_analysis()
-        
-        # صدور تاریخچه
-        print("\n💾 صدور تاریخچه جستجوها...")
-        tracker.export_history(format='json')
-        tracker.export_history(format='csv')
-        
+        try:
+            from folium import Map, Marker
+            from IPython.display import display
+            
+            m = Map(location=[float(ip_info['lat']), float(ip_info['lon'])], zoom_start=10)
+            Marker(
+                [float(ip_info['lat']), float(ip_info['lon'])],
+                popup=f"{ip_info.get('city', 'Unknown')}, {ip_info.get('country', 'Unknown')}",
+                tooltip=ip_info.get('query')
+            ).add_to(m)
+            display(m)
+        except Exception as e:
+            print(f"\n⚠️ خطا در نمایش نقشه تعاملی: {str(e)}")
+            
     except Exception as e:
         print(f"❌ خطا: {str(e)}")
     finally:
-        print("\n✅ پروژه با موفقیت اجرا شد!")
+        print("\nپایان برنامه")
